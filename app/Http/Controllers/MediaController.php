@@ -22,6 +22,7 @@ class MediaController extends CustomController
      *     operationId="index",
      *     summary="List all medias",
      *     description="Get medias list",
+     *      security={{"bearer_token":{}}},
      *      @OA\Response(
      *          response=200,
      *          description="Successful operation",
@@ -53,6 +54,7 @@ class MediaController extends CustomController
      *     operationId="store",
      *     summary="Add a new media to the blog",
      *     description="Create a media and return that",
+     *      security={{"bearer_token":{}}},
      *     @OA\RequestBody(
      *         description="Media object that needs to be added to the blog",
      *         required=true,
@@ -122,6 +124,7 @@ class MediaController extends CustomController
      *      tags={"Medias"},
      *      summary="Get media information",
      *      description="Returns media data",
+     *      security={{"bearer_token":{}}},
      *      @OA\Parameter(
      *          name="id",
      *          description="Media id",
@@ -175,6 +178,7 @@ class MediaController extends CustomController
      *      tags={"Medias"},
      *      summary="Update existing media",
      *      description="Returns updated media data",
+     *      security={{"bearer_token":{}}},
      *      @OA\Parameter(
      *          name="id",
      *          description="Media id",
@@ -252,6 +256,7 @@ class MediaController extends CustomController
      *      tags={"Medias"},
      *      summary="Delete existing media",
      *      description="Deletes a record and returns no content",
+     *      security={{"bearer_token":{}}},
      *      @OA\Parameter(
      *          name="id",
      *          description="Media id",

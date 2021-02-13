@@ -7,7 +7,6 @@ use App\Http\Requests\Comments\UpdateCommentRequest;
 use App\Http\Resources\CommentResource;
 use App\Models\Comment;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Storage;
 
 /**
  * Class CommentController
@@ -22,6 +21,7 @@ class CommentController extends CustomController
      *     operationId="index",
      *     summary="List all comments",
      *     description="Get comments list",
+     *      security={{"bearer_token":{}}},
      *      @OA\Response(
      *          response=200,
      *          description="Successful operation",
@@ -53,6 +53,7 @@ class CommentController extends CustomController
      *     operationId="store",
      *     summary="Add a new comment to the blog",
      *     description="Create a comment and return that",
+     *      security={{"bearer_token":{}}},
      *     @OA\RequestBody(
      *         description="Comment object that needs to be added to the blog",
      *         required=true,
@@ -114,6 +115,7 @@ class CommentController extends CustomController
      *      tags={"Comments"},
      *      summary="Get comment information",
      *      description="Returns comment data",
+     *      security={{"bearer_token":{}}},
      *      @OA\Parameter(
      *          name="id",
      *          description="Comment id",
@@ -167,6 +169,7 @@ class CommentController extends CustomController
      *      tags={"Comments"},
      *      summary="Update existing comment",
      *      description="Returns updated comment data",
+     *      security={{"bearer_token":{}}},
      *      @OA\Parameter(
      *          name="id",
      *          description="Comment id",
@@ -239,6 +242,7 @@ class CommentController extends CustomController
      *      tags={"Comments"},
      *      summary="Delete existing comment",
      *      description="Deletes a record and returns no content",
+     *      security={{"bearer_token":{}}},
      *      @OA\Parameter(
      *          name="id",
      *          description="Comment id",

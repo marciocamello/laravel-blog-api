@@ -5,11 +5,26 @@ namespace App\Http\Resources;
 use Illuminate\Http\Resources\Json\ResourceCollection;
 
 /**
- * Class UserResource
- * @package App\Http\Resources
+ * @OA\Schema(
+ *     title="UserResource",
+ *     description="User resource",
+ *     @OA\Xml(
+ *         name="UserResource"
+ *     )
+ * )
  */
 class UserResource extends ResourceCollection
 {
+    /**
+     * @OA\Property(
+     *     title="Data",
+     *     description="Data wrapper"
+     * )
+     *
+     * @var \App\Models\User[]
+     */
+    private $data;
+
     /**
      * Transform the resource collection into an array.
      *
