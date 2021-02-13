@@ -1,0 +1,65 @@
+version: '2'
+
+services:
+
+  php:
+    container_name: php
+    restart: unless-stopped
+    ports:
+      - 8000:8000
+    build:
+      context: .
+      dockerfile: ./docker/php/Dockerfile
+    command: php artisan serve --host 0.0.0.0
+    volumes:
+      - .:/home
+      - ./docker/php/custom.ini:/usr/local/etc/php/conf.d/custom.ini
+    links:
+      - redis
+      - db
+
+  db:
+    image: mariadb
+    container_name: mariadb
+    restart: unless-stopped
+    ports:
+      - 3306:3306
+    volumes:
+      - ./docker/mariadb/data:/var/lib/mysql
+    environment:
+      MYSQL_ROOT_PASSWORD: q1w2e3r4
+      MYSQL_DATABASE: laravel_crud
+    networks:
+      laravel_network:
+        ipv4_address: 10.0.0.8
+
+  phpmyadmin:
+    image: phpmyadmin/phpmyadmin:latest
+    container_name: phpmyadmin
+    restart: unless-stopped
+    links:
+      - db
+    ports:
+      - 8085:80
+    environment:
+      - PMA_ARBITRARY=1
+    networks:
+      laravel_network:
+        ipv4_address: 10.0.0.9
+
+  redis:
+    image: redis:latest
+    container_name: redis
+    restart: unless-stopped
+    ports:
+      - 6379:6379
+    networks:
+      laravel_network:
+        ipv4_address: 10.0.0.10
+
+networks:
+  laravel_network:
+    ipam:
+      driver: default
+      config:
+        - subnet: 10.0.0.0/24
