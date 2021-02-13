@@ -14,6 +14,10 @@
 |--------------------------------------------------------------------------
 |
 */
+Route::middleware(['api', 'auth:sanctum'])->get('authenticate/user', function (\Illuminate\Http\Request $request) {
+    return $request->user();
+});
+
 
 Route::post('authenticate/login', '\App\Http\Controllers\Auth\AuthController@login')
     ->name('login');
