@@ -45,3 +45,7 @@
 * VueJS
 * Vuex
 * TailwindCSS
+
+### Docs
+
+[Setup](./docs/setup.md)
