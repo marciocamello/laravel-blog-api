@@ -12,6 +12,11 @@
       <excludeFolder url="file://$MODULE_DIR$/vendor/laravel/telescope" />
       <excludeFolder url="file://$MODULE_DIR$/vendor/laravel/horizon" />
       <excludeFolder url="file://$MODULE_DIR$/vendor/laravel/ui" />
+      <excludeFolder url="file://$MODULE_DIR$/vendor/darkaonline/l5-swagger" />
+      <excludeFolder url="file://$MODULE_DIR$/vendor/symfony/yaml" />
+      <excludeFolder url="file://$MODULE_DIR$/vendor/doctrine/annotations" />
+      <excludeFolder url="file://$MODULE_DIR$/vendor/swagger-api/swagger-ui" />
+      <excludeFolder url="file://$MODULE_DIR$/vendor/zircote/swagger-php" />
     </content>
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />
