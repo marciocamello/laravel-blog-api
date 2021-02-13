@@ -1,26 +1,28 @@
 <?php
 
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\RegisterController;
-use App\Http\Controllers\LoginController;
-
 /*
 |--------------------------------------------------------------------------
 | API Routes
 |--------------------------------------------------------------------------
 |
-| Here is where you can register API routes for your application. These
-| routes are loaded by the RouteServiceProvider within a group which
-| is assigned the "api" middleware group. Enjoy building your API!
+| All the Routes for the WebsyBox App setup.
+|
+*/
+/*
+|--------------------------------------------------------------------------
+| Authenticate Route
+|--------------------------------------------------------------------------
 |
 */
 
-Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
-    return $request->user();
-});
+Route::post('authenticate/login', '\App\Http\Controllers\Auth\AuthController@login')
+    ->name('login');
 
+Route::get('authenticate/logout', '\App\Http\Controllers\Auth\AuthController@logout')
+    ->name('logout');
 
-Route::post("/register", [RegisterController::class, "index"]);
-Route::post("/login", [LoginController::class, "index"]);
-Route::post("/logout", [LoginController::class, "logout"]);
+Route::post('authenticate/request-password', '\App\Http\Controllers\Auth\ForgotPasswordController@forgot')
+    ->name('request-password');
+
+Route::post('authenticate/reset-password/{token}', '\App\Http\Controllers\Auth\ForgotPasswordController@reset')
+    ->name('reset-password');

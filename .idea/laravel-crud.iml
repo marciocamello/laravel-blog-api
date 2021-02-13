@@ -9,6 +9,9 @@
       <sourceFolder url="file://$MODULE_DIR$/tests" isTestSource="true" packagePrefix="Tests\" />
       <sourceFolder url="file://$MODULE_DIR$/tests/Feature" isTestSource="true" />
       <sourceFolder url="file://$MODULE_DIR$/tests/Unit" isTestSource="true" />
+      <excludeFolder url="file://$MODULE_DIR$/vendor/laravel/telescope" />
+      <excludeFolder url="file://$MODULE_DIR$/vendor/laravel/horizon" />
+      <excludeFolder url="file://$MODULE_DIR$/vendor/laravel/ui" />
     </content>
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />
