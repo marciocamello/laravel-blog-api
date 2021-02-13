@@ -3,11 +3,38 @@
 namespace App\Http\Requests;
 
 /**
- * Class LoginRequest
- * @package App\Http\Requests
+ * @OA\Schema(
+ *      title="Login User request",
+ *      description="Login User request body data",
+ *      type="object",
+ *      required={"email", "password"}
+ * )
  */
 class LoginRequest extends ApiFormRequest
 {
+    /**
+     * @OA\Property(
+     *      title="email",
+     *      description="User email",
+     *      example="admin@laravel.blog"
+     * )
+     *
+     * @var string
+     */
+    public $email;
+
+    /**
+     * @OA\Property(
+     *      title="password",
+     *      description="User Password",
+     *      example="q1w2e3r4"
+     * )
+     *
+     * @var string
+     */
+    public $password;
+
+
     /**
      * Determine if the user is authorized to make this request.
      *

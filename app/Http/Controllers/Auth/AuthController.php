@@ -13,11 +13,32 @@ use Illuminate\Support\Facades\Auth;
  */
 class AuthController extends Controller
 {
+
     /**
-     * Login route to return user logged with token
-     *
-     * @param LoginRequest $request
-     * @return \Illuminate\Http\JsonResponse|int
+     * @OA\Post(
+     *     path="/authenticate/login",
+     *     tags={"Authenticate"},
+     *     operationId="login",
+     *     summary="Get token to authenticate",
+     *     description="Create a new token to access",
+     *     @OA\RequestBody(
+     *         description="Login object that needs to be added to create a new token",
+     *         required=true,
+     *             @OA\JsonContent(ref="#/components/schemas/LoginRequest")
+     *     ),
+     *     @OA\RequestBody(
+     *         description="Login object that needs to be added to create a new token",
+     *         required=true,
+     *     ),
+     *      @OA\Response(
+     *          response=403,
+     *          description="Forbidden"
+     *      ),
+     *     @OA\Response(
+     *         response=405,
+     *         description="Invalid input",
+     *     )
+     * )
      */
     public function login(LoginRequest $request)
     {

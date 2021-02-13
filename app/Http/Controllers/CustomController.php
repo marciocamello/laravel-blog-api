@@ -34,6 +34,12 @@ class CustomController extends Controller
      *      description="Laravel Blog API Server"
      * )
      *
+     * @OAS\SecurityScheme(
+     *      securityScheme="bearer_token",
+     *      type="http",
+     *      scheme="bearer"
+     * )
+     *
      * @OA\Tag(
      *     name="Projects",
      *     description="API Endpoints of Projects"

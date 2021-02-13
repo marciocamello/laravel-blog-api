@@ -2,8 +2,6 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Requests\Users\UserEmailRequest;
-use App\Http\Requests\Users\UserPasswordRequest;
 use App\Http\Requests\Users\UserStoreRequest;
 use App\Http\Requests\Users\UserUpdateRequest;
 use App\Http\Resources\UserResource;
@@ -17,17 +15,32 @@ use Illuminate\Support\Facades\Hash;
  */
 class UserController extends CustomController
 {
-    /*
-    |--------------------------------------------------------------------------
-    | API UserResource Route
-    |--------------------------------------------------------------------------
-    |
-    */
-
     /**
-     * Display a all items of the resource.
-     *
-     * @return UserResource
+     * @OA\Get(
+     *     path="/users",
+     *     tags={"Users"},
+     *     operationId="index",
+     *     summary="List all users",
+     *     description="Get users list",
+     *      security={{"bearer_token":{}}},
+     *      @OA\Response(
+     *          response=200,
+     *          description="Successful operation",
+     *          @OA\JsonContent(ref="#/components/schemas/UserResource")
+     *       ),
+     *      @OA\Response(
+     *          response=401,
+     *          description="Unauthenticated",
+     *      ),
+     *      @OA\Response(
+     *          response=403,
+     *          description="Forbidden"
+     *      ),
+     *     @OA\Response(
+     *         response=405,
+     *         description="Invalid input",
+     *     )
+     * )
      */
     public function index()
     {
@@ -35,10 +48,35 @@ class UserController extends CustomController
     }
 
     /**
-     * Store a newly created resource in storage.
-     *
-     * @param UserStoreRequest $request
-     * @return \Illuminate\Http\JsonResponse
+     * @OA\Post(
+     *     path="/users",
+     *     tags={"Users"},
+     *     operationId="store",
+     *     summary="Add a new User to the blog",
+     *     description="Create a User and return that",
+     *      security={{"bearer_token":{}}},
+     *     @OA\RequestBody(
+     *         description="User object that needs to be added to the blog",
+     *         required=true,
+     *             @OA\JsonContent(ref="#/components/schemas/UserStoreRequest")
+     *     ),
+     *     @OA\RequestBody(
+     *         description="User object that needs to be added to the blog",
+     *         required=true,
+     *     ),
+     *      @OA\Response(
+     *          response=401,
+     *          description="Unauthenticated",
+     *      ),
+     *      @OA\Response(
+     *          response=403,
+     *          description="Forbidden"
+     *      ),
+     *     @OA\Response(
+     *         response=405,
+     *         description="Invalid input",
+     *     )
+     * )
      */
     public function store(UserStoreRequest $request)
     {
@@ -74,13 +112,50 @@ class UserController extends CustomController
     }
 
     /**
-     * Update the specified resource in storage.
-     *
-     * @param UserUpdateRequest $request
-     * @param $id
-     * @return \Illuminate\Http\JsonResponse
+     * @OA\Put(
+     *      path="/users/{id}",
+     *      operationId="update",
+     *      tags={"Users"},
+     *      summary="Update existing User",
+     *      description="Returns updated User data",
+     *      security={{"bearer_token":{}}},
+     *      @OA\Parameter(
+     *          name="id",
+     *          description="User id",
+     *          required=true,
+     *          in="path",
+     *          @OA\Schema(
+     *              type="integer"
+     *          )
+     *      ),
+     *      @OA\RequestBody(
+     *          required=true,
+     *          @OA\JsonContent(ref="#/components/schemas/UserUpdateRequest")
+     *      ),
+     *      @OA\Response(
+     *          response=202,
+     *          description="Successful operation",
+     *          @OA\JsonContent(ref="#/components/schemas/User")
+     *       ),
+     *      @OA\Response(
+     *          response=400,
+     *          description="Bad Request"
+     *      ),
+     *      @OA\Response(
+     *          response=401,
+     *          description="Unauthenticated",
+     *      ),
+     *      @OA\Response(
+     *          response=403,
+     *          description="Forbidden"
+     *      ),
+     *      @OA\Response(
+     *          response=404,
+     *          description="Resource Not Found"
+     *      )
+     * )
      */
-    public function update(UserUpdateRequest $request, $id)
+    public function update(UserUpdateRequest $request, User $user)
     {
         try {
 
@@ -88,7 +163,6 @@ class UserController extends CustomController
 
             DB::beginTransaction();
 
-            $user = User::find($id);
             $user->update([
                 'name' => $validated['name']
             ]);
@@ -111,99 +185,44 @@ class UserController extends CustomController
     }
 
     /**
-     * Update the specified resource in storage.
-     *
-     * @param UserPasswordRequest $request
-     * @param $id
-     * @return \Illuminate\Http\JsonResponse
+     * @OA\Get(
+     *      path="/users/{id}",
+     *      operationId="show",
+     *      tags={"Users"},
+     *      summary="Get User information",
+     *      description="Returns User data",
+     *      security={{"bearer_token":{}}},
+     *      @OA\Parameter(
+     *          name="id",
+     *          description="User id",
+     *          required=true,
+     *          in="path",
+     *          @OA\Schema(
+     *              type="integer"
+     *          )
+     *      ),
+     *      @OA\Response(
+     *          response=200,
+     *          description="Successful operation",
+     *          @OA\JsonContent(ref="#/components/schemas/User")
+     *       ),
+     *      @OA\Response(
+     *          response=400,
+     *          description="Bad Request"
+     *      ),
+     *      @OA\Response(
+     *          response=401,
+     *          description="Unauthenticated",
+     *      ),
+     *      @OA\Response(
+     *          response=403,
+     *          description="Forbidden"
+     *      )
+     * )
      */
-    public function changePassword(UserPasswordRequest $request, $id)
+    public function show(User $user)
     {
         try {
-
-            $validated = $request->validated();
-
-            DB::beginTransaction();
-
-            $user = User::find($id);
-            $user->update([
-                'password' => Hash::make($validated['password'])
-            ]);
-
-            DB::commit();
-
-            return response()->json([
-                'message' => __('dashboard.users.password_updated'),
-                'response' => $user->toArray()
-            ], 200);
-
-        } catch (\Exception $e) {
-
-            DB::rollBack();
-
-            return response()->json([
-                'message' => __('dashboard.users.error'),
-                'error' => $e->getMessage()
-            ], 200);
-        }
-    }
-
-    /**
-     * Update the specified resource in storage.
-     *
-     * @param UserEmailRequest $request
-     * @param $id
-     * @return \Illuminate\Http\JsonResponse
-     */
-    public function changeEmail(UserEmailRequest $request, $id)
-    {
-        try {
-
-            $validated = $request->validated();
-
-            DB::beginTransaction();
-
-            $user = User::find($id);
-            $user->update([
-                'email' => $validated['email']
-            ]);
-
-            DB::commit();
-
-            return response()->json([
-                'message' => __('dashboard.users.email_updated'),
-                'response' => $user->toArray()
-            ], 200);
-        } catch (\Exception $e) {
-
-            DB::rollBack();
-
-            return response()->json([
-                'message' => __('dashboard.users.error'),
-                'error' => $e->getMessage()
-            ], 200);
-        }
-    }
-
-    /**
-     * Display the specified resource.
-     *
-     * @param $id
-     * @return \Illuminate\Http\JsonResponse
-     */
-    public function show($id)
-    {
-        try {
-
-            $user = User::find($id);
-
-            if (!$user) {
-
-                return response()->json([
-                    'message' => __('dashboard.users.show_failed'),
-                    'response' => $user
-                ], 400);
-            }
 
             return response()->json([
                 'message' => __('dashboard.users.show'),
@@ -221,27 +240,48 @@ class UserController extends CustomController
     }
 
     /**
-     * Remove the specified resource from storage.
-     *
-     * @param $id
-     * @return \Illuminate\Http\JsonResponse
+     * @OA\Delete(
+     *      path="/users/{id}",
+     *      operationId="destroy",
+     *      tags={"Users"},
+     *      summary="Delete existing User",
+     *      description="Deletes a record and returns no content",
+     *      security={{"bearer_token":{}}},
+     *      @OA\Parameter(
+     *          name="id",
+     *          description="User id",
+     *          required=true,
+     *          in="path",
+     *          @OA\Schema(
+     *              type="integer"
+     *          )
+     *      ),
+     *      @OA\Response(
+     *          response=204,
+     *          description="Successful operation",
+     *          @OA\JsonContent()
+     *       ),
+     *      @OA\Response(
+     *          response=401,
+     *          description="Unauthenticated",
+     *      ),
+     *      @OA\Response(
+     *          response=403,
+     *          description="Forbidden"
+     *      ),
+     *      @OA\Response(
+     *          response=404,
+     *          description="Resource Not Found"
+     *      )
+     * )
      */
-    public function destroy($id)
+    public function destroy(User $user)
     {
         try {
 
             DB::beginTransaction();
 
-            $model = User::where(['id' => $id]);
-
-            if (!$model->exists()) {
-
-                return response()->json([
-                    'message' => __('dashboard.users.destroy_failed')
-                ], 400);
-            }
-
-            $model->delete();
+            $user->delete();
 
             DB::commit();
 

@@ -49,3 +49,4 @@
 ### Docs
 
 [Setup](./docs/setup.md)
+[Docs](./docs/swagger.md)

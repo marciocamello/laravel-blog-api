@@ -21,6 +21,7 @@ class PostController extends CustomController
      *     operationId="index",
      *     summary="List all posts",
      *     description="Get posts list",
+     *      security={{"bearer_token":{}}},
      *      @OA\Response(
      *          response=200,
      *          description="Successful operation",
@@ -52,6 +53,7 @@ class PostController extends CustomController
      *     operationId="store",
      *     summary="Add a new Post to the blog",
      *     description="Create a Post and return that",
+     *      security={{"bearer_token":{}}},
      *     @OA\RequestBody(
      *         description="Post object that needs to be added to the blog",
      *         required=true,
@@ -114,6 +116,7 @@ class PostController extends CustomController
      *      tags={"Posts"},
      *      summary="Get Post information",
      *      description="Returns Post data",
+     *      security={{"bearer_token":{}}},
      *      @OA\Parameter(
      *          name="id",
      *          description="Post id",
@@ -167,6 +170,7 @@ class PostController extends CustomController
      *      tags={"Posts"},
      *      summary="Update existing Post",
      *      description="Returns updated Post data",
+     *      security={{"bearer_token":{}}},
      *      @OA\Parameter(
      *          name="id",
      *          description="Post id",
@@ -241,6 +245,7 @@ class PostController extends CustomController
      *      tags={"Posts"},
      *      summary="Delete existing Post",
      *      description="Deletes a record and returns no content",
+     *      security={{"bearer_token":{}}},
      *      @OA\Parameter(
      *          name="id",
      *          description="Post id",
