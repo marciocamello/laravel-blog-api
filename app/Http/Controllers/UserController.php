@@ -2,12 +2,11 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Requests\Users\UserAclRequest;
 use App\Http\Requests\Users\UserEmailRequest;
 use App\Http\Requests\Users\UserPasswordRequest;
 use App\Http\Requests\Users\UserStoreRequest;
 use App\Http\Requests\Users\UserUpdateRequest;
-use App\Http\Resources\Users as UserResource;
+use App\Http\Resources\UserResource;
 use App\Models\User;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
@@ -20,7 +19,7 @@ class UserController extends CustomController
 {
     /*
     |--------------------------------------------------------------------------
-    | API Users Route
+    | API UserResource Route
     |--------------------------------------------------------------------------
     |
     */

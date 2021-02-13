@@ -13,7 +13,7 @@ class BroadcastingController extends CustomController
 {
     /*
     |--------------------------------------------------------------------------
-    | API Users Route
+    | API UserResource Route
     |--------------------------------------------------------------------------
     |
     */

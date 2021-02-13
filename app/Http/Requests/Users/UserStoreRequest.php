@@ -6,7 +6,7 @@ use App\Http\Requests\ApiFormRequest;
 
 /**
  * Class UserStoreRequest
- * @package App\Http\Requests\Users
+ * @package App\Http\Requests\UserResource
  */
 class UserStoreRequest extends ApiFormRequest
 {
