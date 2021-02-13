@@ -10,11 +10,11 @@ class RegisterController extends Controller
 {
     public function index(Request $request)
     {
-        try{
+        try {
             $request->validate([
                 'name' => ['required'],
-                'email' => ['required','email', 'unique:users'],
-                'password' => ['required','min:8', 'confirmed'],
+                'email' => ['required', 'email', 'unique:users'],
+                'password' => ['required', 'min:8', 'confirmed'],
             ]);
 
             $user = User::create([
@@ -24,7 +24,7 @@ class RegisterController extends Controller
             ]);
 
             return response()->json($user);
-        }catch (\Exception $e) {
+        } catch (\Exception $e) {
 
             return response()->json([
                 'error' => $e->getMessage()
