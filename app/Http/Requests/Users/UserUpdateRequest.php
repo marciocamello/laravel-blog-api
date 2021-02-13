@@ -6,7 +6,7 @@ use App\Http\Requests\ApiFormRequest;
 
 /**
  * Class UserUpdateRequest
- * @package App\Http\Requests\Users
+ * @package App\Http\Requests\UserResource
  */
 class UserUpdateRequest extends ApiFormRequest
 {

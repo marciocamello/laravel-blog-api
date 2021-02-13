@@ -58,7 +58,7 @@ class RouteServiceProvider extends ServiceProvider
      */
     protected function mapWebRoutes()
     {
-        $this->websyLoadRoutes('web', 'web');
+        $this->customLoadRoutes('web', 'web');
         Route::middleware('web')
             ->namespace($this->namespace)
             ->group(base_path('routes/web.php'));
@@ -73,7 +73,7 @@ class RouteServiceProvider extends ServiceProvider
      */
     protected function mapApiRoutes()
     {
-        $this->websyLoadRoutes('api', 'api');
+        $this->customLoadRoutes('api', 'api');
         Route::prefix('api')
             ->middleware('api')
             ->namespace($this->namespace)
@@ -84,7 +84,7 @@ class RouteServiceProvider extends ServiceProvider
      * @param $group
      * @param $dirPath
      */
-    public function websyLoadRoutes($group, $dirPath)
+    public function customLoadRoutes($group, $dirPath)
     {
         $path = base_path('routes/' . $dirPath);
         $data = new \RecursiveIteratorIterator(new \RecursiveDirectoryIterator($path), \RecursiveIteratorIterator::SELF_FIRST);
