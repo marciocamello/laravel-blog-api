@@ -31,6 +31,8 @@ composer install
 ```
 
 ### Migrate database
+
 ```
+exit docker bash
 php artisan migrate
 ```
