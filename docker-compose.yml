@@ -17,6 +17,9 @@ services:
     links:
       - redis
       - db
+    networks:
+      laravel_network:
+        ipv4_address: 10.0.0.7
 
   db:
     image: mariadb
