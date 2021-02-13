@@ -6,8 +6,16 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Validation\ValidationException;
 
+/**
+ * Class LoginController
+ * @package App\Http\Controllers
+ */
 class LoginController extends Controller
 {
+    /**
+     * @param Request $request
+     * @return \Illuminate\Http\JsonResponse
+     */
     public function index(Request $request)
     {
         try {
@@ -31,5 +39,13 @@ class LoginController extends Controller
                 'errors' => $e->validator->errors()
             ]);
         }
+    }
+
+    /**
+     * @param Request $request
+     */
+    public function logout(Request $request)
+    {
+        Auth::logout();
     }
 }
