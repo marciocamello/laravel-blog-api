@@ -8,6 +8,6 @@
 */
 Route::group(['middleware' => ['api', 'auth:sanctum']], function () {
 
-    Route::resource('posts', '\App\Http\Controllers\PostController');
+    Route::resource('medias', '\App\Http\Controllers\MediaController');
 
 });
