@@ -21,6 +21,7 @@ class CategoryController extends CustomController
      *     operationId="index",
      *     summary="List all categories",
      *     description="Get categories list",
+     *      security={{"bearer_token":{}}},
      *      @OA\Response(
      *          response=200,
      *          description="Successful operation",
@@ -52,6 +53,7 @@ class CategoryController extends CustomController
      *     operationId="store",
      *     summary="Add a new category to the blog",
      *     description="Create a category and return that",
+     *      security={{"bearer_token":{}}},
      *     @OA\RequestBody(
      *         description="Category object that needs to be added to the blog",
      *         required=true,
@@ -112,6 +114,7 @@ class CategoryController extends CustomController
      *      tags={"Categories"},
      *      summary="Get category information",
      *      description="Returns category data",
+     *      security={{"bearer_token":{}}},
      *      @OA\Parameter(
      *          name="id",
      *          description="Category id",
@@ -165,6 +168,7 @@ class CategoryController extends CustomController
      *      tags={"Categories"},
      *      summary="Update existing category",
      *      description="Returns updated category data",
+     *      security={{"bearer_token":{}}},
      *      @OA\Parameter(
      *          name="id",
      *          description="Category id",
@@ -237,6 +241,7 @@ class CategoryController extends CustomController
      *      tags={"Categories"},
      *      summary="Delete existing category",
      *      description="Deletes a record and returns no content",
+     *      security={{"bearer_token":{}}},
      *      @OA\Parameter(
      *          name="id",
      *          description="Category id",

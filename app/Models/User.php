@@ -2,13 +2,28 @@
 
 namespace App\Models;
 
-
 /**
- * Class User
- * @package App
+ * @OA\Schema(required={"name", "email", "password"}, @OA\Xml(name="User"))
  */
 class User extends \App\User
 {
+    /**
+     * @OA\Property(example="User name")
+     * @var string
+     */
+    public $name;
+
+    /**
+     * @OA\Property(example="User email")
+     * @var string
+     */
+    public $email;
+
+    /**
+     * @OA\Property(example="User password")
+     * @var string
+     */
+    //public $password;
 
     /**
      * The attributes that are mass assignable.
