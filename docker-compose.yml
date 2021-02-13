@@ -17,6 +17,9 @@ services:
     links:
       - redis
       - db
+    networks:
+      laravel_network:
+        ipv4_address: 10.0.0.7
 
   db:
     image: mariadb
@@ -29,6 +32,9 @@ services:
     environment:
       MYSQL_ROOT_PASSWORD: q1w2e3r4
       MYSQL_DATABASE: laravel_crud
+    networks:
+      laravel_network:
+        ipv4_address: 10.0.0.8
 
   phpmyadmin:
     image: phpmyadmin/phpmyadmin:latest
@@ -40,6 +46,9 @@ services:
       - 8085:80
     environment:
       - PMA_ARBITRARY=1
+    networks:
+      laravel_network:
+        ipv4_address: 10.0.0.9
 
   redis:
     image: redis:latest
@@ -47,4 +56,13 @@ services:
     restart: unless-stopped
     ports:
       - 6379:6379
+    networks:
+      laravel_network:
+        ipv4_address: 10.0.0.10
 
+networks:
+  laravel_network:
+    ipam:
+      driver: default
+      config:
+        - subnet: 10.0.0.0/24
