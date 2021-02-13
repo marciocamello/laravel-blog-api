@@ -11,6 +11,7 @@ use Illuminate\Database\Eloquent\Model;
 class Post extends Model
 {
     use HasFactory;
+
     /**
      * @OA\Property(example="Post title")
      * @var string
@@ -22,4 +23,14 @@ class Post extends Model
      * @var string
      */
     public $description;
+
+    /**
+     * @var string[]
+     */
+    protected $fillable = [
+        'user_id',
+        'category_id',
+        'title',
+        'description'
+    ];
 }

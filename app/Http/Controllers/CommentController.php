@@ -4,7 +4,10 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\Comments\StoreCommentRequest;
 use App\Http\Requests\Comments\UpdateCommentRequest;
+use App\Http\Resources\CommentResource;
 use App\Models\Comment;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Storage;
 
 /**
  * Class CommentController
@@ -40,7 +43,7 @@ class CommentController extends CustomController
      */
     public function index()
     {
-        //
+        return new CommentResource(Comment::all());
     }
 
     /**
@@ -75,7 +78,33 @@ class CommentController extends CustomController
      */
     public function store(StoreCommentRequest $request)
     {
-        //
+        try {
+
+            $validated = $request->validated();
+
+            DB::beginTransaction();
+
+            $comment = Comment::create([
+                'user_id' => auth()->id(),
+                'post_id' => $validated['post_id'],
+                'content' => $validated['content']
+            ]);
+
+            DB::commit();
+
+            return response()->json([
+                'message' => __('dashboard.comments.created'),
+                'response' => $comment->toArray()
+            ], 200);
+        } catch (\Exception $e) {
+
+            DB::rollBack();
+
+            return response()->json([
+                'message' => __('dashboard.comments.error'),
+                'error' => $e->getMessage()
+            ], 200);
+        }
     }
 
     /**
@@ -115,7 +144,20 @@ class CommentController extends CustomController
      */
     public function show(Comment $comment)
     {
-        //
+        try {
+
+            return response()->json([
+                'message' => __('dashboard.comments.show'),
+                'response' => $comment
+            ], 200);
+
+        } catch (\Exception $e) {
+
+            return response()->json([
+                'message' => __('dashboard.comments.error'),
+                'error' => $e->getMessage()
+            ], 200);
+        }
     }
 
     /**
@@ -163,7 +205,31 @@ class CommentController extends CustomController
      */
     public function update(UpdateCommentRequest $request, Comment $comment)
     {
-        //
+        try {
+
+            $validated = $request->validated();
+
+            DB::beginTransaction();
+
+            $comment->update([
+                'content' => $validated['content']
+            ]);
+
+            DB::commit();
+
+            return response()->json([
+                'message' => __('dashboard.comments.updated'),
+                'response' => $comment->toArray()
+            ], 200);
+        } catch (\Exception $e) {
+
+            DB::rollBack();
+
+            return response()->json([
+                'message' => __('dashboard.comments.error'),
+                'error' => $e->getMessage()
+            ], 200);
+        }
     }
 
     /**
@@ -203,6 +269,25 @@ class CommentController extends CustomController
      */
     public function destroy(Comment $comment)
     {
-        //
+        try {
+
+            DB::beginTransaction();
+
+            $comment->delete();
+
+            DB::commit();
+
+            return response()->json([
+                'message' => __('dashboard.comments.destroy'),
+            ], 200);
+        } catch (\Exception $e) {
+
+            DB::rollBack();
+
+            return response()->json([
+                'message' => __('dashboard.comments.error'),
+                'error' => $e->getMessage()
+            ], 200);
+        }
     }
 }

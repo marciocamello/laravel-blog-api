@@ -441,8 +441,8 @@
                 "tags": [
                     "Medias"
                 ],
-                "summary": "Add a new category to the blog",
-                "description": "Create a category and return that",
+                "summary": "Add a new media to the blog",
+                "description": "Create a media and return that",
                 "operationId": "store",
                 "requestBody": {
                     "description": "Media object that needs to be added to the blog",
@@ -473,8 +473,8 @@
                 "tags": [
                     "Medias"
                 ],
-                "summary": "Get category information",
-                "description": "Returns category data",
+                "summary": "Get media information",
+                "description": "Returns media data",
                 "operationId": "show",
                 "parameters": [
                     {
@@ -513,8 +513,8 @@
                 "tags": [
                     "Medias"
                 ],
-                "summary": "Update existing category",
-                "description": "Returns updated category data",
+                "summary": "Update existing media",
+                "description": "Returns updated media data",
                 "operationId": "update",
                 "parameters": [
                     {
@@ -566,7 +566,7 @@
                 "tags": [
                     "Medias"
                 ],
-                "summary": "Delete existing category",
+                "summary": "Delete existing media",
                 "description": "Deletes a record and returns no content",
                 "operationId": "destroy",
                 "parameters": [

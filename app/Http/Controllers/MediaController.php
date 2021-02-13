@@ -4,7 +4,10 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\Medias\StoreMediaRequest;
 use App\Http\Requests\Medias\UpdateMediaRequest;
+use App\Http\Resources\MediaResource;
 use App\Models\Media;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Storage;
 
 /**
  * Class MediaController
@@ -40,7 +43,7 @@ class MediaController extends CustomController
      */
     public function index()
     {
-        //
+        return new MediaResource(Media::all());
     }
 
     /**
@@ -48,8 +51,8 @@ class MediaController extends CustomController
      *     path="/medias",
      *     tags={"Medias"},
      *     operationId="store",
-     *     summary="Add a new category to the blog",
-     *     description="Create a category and return that",
+     *     summary="Add a new media to the blog",
+     *     description="Create a media and return that",
      *     @OA\RequestBody(
      *         description="Media object that needs to be added to the blog",
      *         required=true,
@@ -75,7 +78,41 @@ class MediaController extends CustomController
      */
     public function store(StoreMediaRequest $request)
     {
-        //
+        try {
+
+            $validated = $request->validated();
+
+            $file = $request->file('file');
+
+            $name = uniqid(date('HisYmd'));
+            $extension = $file->extension();
+            $nameFile = "{$name}.{$extension}";
+
+            $file->storePubliclyAs('medias', $nameFile, 'public');
+
+            DB::beginTransaction();
+
+            $media = Media::create([
+                'post_id' => $validated['post_id'],
+                'file' => $nameFile,
+                'file_info' => [],
+            ]);
+
+            DB::commit();
+
+            return response()->json([
+                'message' => __('dashboard.medias.created'),
+                'response' => $media->toArray()
+            ], 200);
+        } catch (\Exception $e) {
+
+            DB::rollBack();
+
+            return response()->json([
+                'message' => __('dashboard.medias.error'),
+                'error' => $e->getMessage()
+            ], 200);
+        }
     }
 
     /**
@@ -83,8 +120,8 @@ class MediaController extends CustomController
      *      path="/medias/{id}",
      *      operationId="show",
      *      tags={"Medias"},
-     *      summary="Get category information",
-     *      description="Returns category data",
+     *      summary="Get media information",
+     *      description="Returns media data",
      *      @OA\Parameter(
      *          name="id",
      *          description="Media id",
@@ -113,9 +150,22 @@ class MediaController extends CustomController
      *      )
      * )
      */
-    public function show(Media $category)
+    public function show(Media $media)
     {
-        //
+        try {
+
+            return response()->json([
+                'message' => __('dashboard.medias.show'),
+                'response' => $media
+            ], 200);
+
+        } catch (\Exception $e) {
+
+            return response()->json([
+                'message' => __('dashboard.medias.error'),
+                'error' => $e->getMessage()
+            ], 200);
+        }
     }
 
     /**
@@ -123,8 +173,8 @@ class MediaController extends CustomController
      *      path="/medias/{id}",
      *      operationId="update",
      *      tags={"Medias"},
-     *      summary="Update existing category",
-     *      description="Returns updated category data",
+     *      summary="Update existing media",
+     *      description="Returns updated media data",
      *      @OA\Parameter(
      *          name="id",
      *          description="Media id",
@@ -161,9 +211,38 @@ class MediaController extends CustomController
      *      )
      * )
      */
-    public function update(UpdateMediaRequest $request, Media $category)
+    public function update(UpdateMediaRequest $request, Media $media)
     {
-        //
+        try {
+
+            $file = $request->file('file');
+            $nameFile =  $media['file'];
+
+            Storage::disk('public')->delete("medias/$nameFile");
+            $file->storePubliclyAs('medias', $nameFile, 'public');
+
+            DB::beginTransaction();
+
+            $media->update([
+                'file' => $nameFile,
+                'file_info' => [],
+            ]);
+
+            DB::commit();
+
+            return response()->json([
+                'message' => __('dashboard.medias.updated'),
+                'response' => $media->toArray()
+            ], 200);
+        } catch (\Exception $e) {
+
+            DB::rollBack();
+
+            return response()->json([
+                'message' => __('dashboard.medias.error'),
+                'error' => $e->getMessage()
+            ], 200);
+        }
     }
 
     /**
@@ -171,7 +250,7 @@ class MediaController extends CustomController
      *      path="/medias/{id}",
      *      operationId="destroy",
      *      tags={"Medias"},
-     *      summary="Delete existing category",
+     *      summary="Delete existing media",
      *      description="Deletes a record and returns no content",
      *      @OA\Parameter(
      *          name="id",
@@ -201,8 +280,28 @@ class MediaController extends CustomController
      *      )
      * )
      */
-    public function destroy(Media $category)
+    public function destroy(Media $media)
     {
-        //
+        try {
+
+            DB::beginTransaction();
+
+            $media->delete();
+            Storage::disk('public')->delete("medias/$media[file]");
+
+            DB::commit();
+
+            return response()->json([
+                'message' => __('dashboard.medias.destroy'),
+            ], 200);
+        } catch (\Exception $e) {
+
+            DB::rollBack();
+
+            return response()->json([
+                'message' => __('dashboard.medias.error'),
+                'error' => $e->getMessage()
+            ], 200);
+        }
     }
 }

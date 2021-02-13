@@ -17,4 +17,12 @@ class Category extends Model
      * @var string
      */
     public $name;
+
+    /**
+     * @var string[]
+     */
+    protected $fillable = [
+        'name',
+        'parent_id'
+    ];
 }

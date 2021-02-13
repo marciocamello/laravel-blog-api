@@ -43,7 +43,7 @@ class UpdateCategoryRequest extends ApiFormRequest
     public function rules()
     {
         return [
-            //
+            'name' => ['required']
         ];
     }
 }

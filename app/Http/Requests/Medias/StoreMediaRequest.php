@@ -65,7 +65,8 @@ class StoreMediaRequest extends ApiFormRequest
     public function rules()
     {
         return [
-            //
+            'file' => ['required'],
+            'post_id' => ['required']
         ];
     }
 }

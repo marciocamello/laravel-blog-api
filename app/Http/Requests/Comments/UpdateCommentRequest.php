@@ -65,7 +65,7 @@ class UpdateCommentRequest extends ApiFormRequest
     public function rules()
     {
         return [
-            //
+            'content' => ['required', 'max:1000']
         ];
     }
 }

@@ -54,7 +54,9 @@ class StorePostRequest extends ApiFormRequest
     public function rules()
     {
         return [
-            //
+            'title' => ['required', 'max:250', 'unique:posts'],
+            'description' => ['required'],
+            'category_id' => ['required'],
         ];
     }
 }

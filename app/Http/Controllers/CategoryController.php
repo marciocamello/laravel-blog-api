@@ -4,7 +4,9 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\Categories\StoreCategoryRequest;
 use App\Http\Requests\Categories\UpdateCategoryRequest;
+use App\Http\Resources\CategoryResource;
 use App\Models\Category;
+use Illuminate\Support\Facades\DB;
 
 /**
  * Class CategoryController
@@ -40,7 +42,7 @@ class CategoryController extends CustomController
      */
     public function index()
     {
-        //
+        return new CategoryResource(Category::all());
     }
 
     /**
@@ -53,7 +55,7 @@ class CategoryController extends CustomController
      *     @OA\RequestBody(
      *         description="Category object that needs to be added to the blog",
      *         required=true,
- *             @OA\JsonContent(ref="#/components/schemas/StoreCategoryRequest")
+     *             @OA\JsonContent(ref="#/components/schemas/StoreCategoryRequest")
      *     ),
      *     @OA\RequestBody(
      *         description="Category object that needs to be added to the blog",
@@ -75,7 +77,32 @@ class CategoryController extends CustomController
      */
     public function store(StoreCategoryRequest $request)
     {
-        //
+        try {
+
+            $validated = $request->validated();
+
+            DB::beginTransaction();
+
+            $user = Category::create([
+                'name' => $validated['name'],
+                'parent_id' => $validated['parent_id'] ?? 0
+            ]);
+
+            DB::commit();
+
+            return response()->json([
+                'message' => __('dashboard.categories.created'),
+                'response' => $user->toArray()
+            ], 200);
+        } catch (\Exception $e) {
+
+            DB::rollBack();
+
+            return response()->json([
+                'message' => __('dashboard.categories.error'),
+                'error' => $e->getMessage()
+            ], 200);
+        }
     }
 
     /**
@@ -115,7 +142,20 @@ class CategoryController extends CustomController
      */
     public function show(Category $category)
     {
-        //
+        try {
+
+            return response()->json([
+                'message' => __('dashboard.categories.show'),
+                'response' => $category
+            ], 200);
+
+        } catch (\Exception $e) {
+
+            return response()->json([
+                'message' => __('dashboard.categories.error'),
+                'error' => $e->getMessage()
+            ], 200);
+        }
     }
 
     /**
@@ -163,7 +203,31 @@ class CategoryController extends CustomController
      */
     public function update(UpdateCategoryRequest $request, Category $category)
     {
-        //
+        try {
+
+            $validated = $request->validated();
+
+            DB::beginTransaction();
+
+            $category->update([
+                'name' => $validated['name']
+            ]);
+
+            DB::commit();
+
+            return response()->json([
+                'message' => __('dashboard.categories.updated'),
+                'response' => $category->toArray()
+            ], 200);
+        } catch (\Exception $e) {
+
+            DB::rollBack();
+
+            return response()->json([
+                'message' => __('dashboard.categories.error'),
+                'error' => $e->getMessage()
+            ], 200);
+        }
     }
 
     /**
@@ -203,6 +267,25 @@ class CategoryController extends CustomController
      */
     public function destroy(Category $category)
     {
-        //
+        try {
+
+            DB::beginTransaction();
+
+            $category->delete();
+
+            DB::commit();
+
+            return response()->json([
+                'message' => __('dashboard.categories.destroy'),
+            ], 200);
+        } catch (\Exception $e) {
+
+            DB::rollBack();
+
+            return response()->json([
+                'message' => __('dashboard.categories.error'),
+                'error' => $e->getMessage()
+            ], 200);
+        }
     }
 }

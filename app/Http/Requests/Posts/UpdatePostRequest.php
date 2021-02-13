@@ -54,7 +54,9 @@ class UpdatePostRequest extends ApiFormRequest
     public function rules()
     {
         return [
-            //
+            'title' => ['required', 'max:250', 'unique:posts,id'],
+            'description' => ['required'],
+            'category_id' => ['required'],
         ];
     }
 }

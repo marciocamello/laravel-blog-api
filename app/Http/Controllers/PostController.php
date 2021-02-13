@@ -4,7 +4,9 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\Posts\StorePostRequest;
 use App\Http\Requests\Posts\UpdatePostRequest;
+use App\Http\Resources\PostResource;
 use App\Models\Post;
+use Illuminate\Support\Facades\DB;
 
 /**
  * Class PostController
@@ -40,7 +42,7 @@ class PostController extends CustomController
      */
     public function index()
     {
-        //
+        return new PostResource(Post::all());
     }
 
     /**
@@ -75,7 +77,34 @@ class PostController extends CustomController
      */
     public function store(StorePostRequest $request)
     {
-        //
+        try {
+
+            $validated = $request->validated();
+
+            DB::beginTransaction();
+
+            $user = Post::create([
+                'user_id' => auth()->id(),
+                'category_id' => $validated['category_id'],
+                'title' => $validated['title'],
+                'description' => $validated['description']
+            ]);
+
+            DB::commit();
+
+            return response()->json([
+                'message' => __('dashboard.posts.created'),
+                'response' => $user->toArray()
+            ], 200);
+        } catch (\Exception $e) {
+
+            DB::rollBack();
+
+            return response()->json([
+                'message' => __('dashboard.posts.error'),
+                'error' => $e->getMessage()
+            ], 200);
+        }
     }
 
     /**
@@ -113,9 +142,22 @@ class PostController extends CustomController
      *      )
      * )
      */
-    public function show(Post $Post)
+    public function show(Post $post)
     {
-        //
+        try {
+
+            return response()->json([
+                'message' => __('dashboard.posts.show'),
+                'response' => $post
+            ], 200);
+
+        } catch (\Exception $e) {
+
+            return response()->json([
+                'message' => __('dashboard.posts.error'),
+                'error' => $e->getMessage()
+            ], 200);
+        }
     }
 
     /**
@@ -161,9 +203,35 @@ class PostController extends CustomController
      *      )
      * )
      */
-    public function update(UpdatePostRequest $request, Post $Post)
+    public function update(UpdatePostRequest $request, Post $post)
     {
-        //
+        try {
+
+            $validated = $request->validated();
+
+            DB::beginTransaction();
+
+            $post->update([
+                'category_id' => $validated['category_id'],
+                'title' => $validated['title'],
+                'description' => $validated['description']
+            ]);
+
+            DB::commit();
+
+            return response()->json([
+                'message' => __('dashboard.posts.updated'),
+                'response' => $post->toArray()
+            ], 200);
+        } catch (\Exception $e) {
+
+            DB::rollBack();
+
+            return response()->json([
+                'message' => __('dashboard.posts.error'),
+                'error' => $e->getMessage()
+            ], 200);
+        }
     }
 
     /**
@@ -201,8 +269,27 @@ class PostController extends CustomController
      *      )
      * )
      */
-    public function destroy(Post $Post)
+    public function destroy(Post $post)
     {
-        //
+        try {
+
+            DB::beginTransaction();
+
+            $post->delete();
+
+            DB::commit();
+
+            return response()->json([
+                'message' => __('dashboard.posts.destroy'),
+            ], 200);
+        } catch (\Exception $e) {
+
+            DB::rollBack();
+
+            return response()->json([
+                'message' => __('dashboard.posts.error'),
+                'error' => $e->getMessage()
+            ], 200);
+        }
     }
 }

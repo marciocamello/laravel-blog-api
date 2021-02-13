@@ -42,24 +42,35 @@ class UserController extends CustomController
      */
     public function store(UserStoreRequest $request)
     {
-        $validated = $request->validated();
+        try {
 
-        DB::beginTransaction();
+            $validated = $request->validated();
 
-        $user = User::create([
-            'name' => $validated['name'],
-            'email' => $validated['email'],
-            'password' => Hash::make($validated['password']),
-        ]);
+            DB::beginTransaction();
 
-        $user->accessToken = $user->createToken('app-token')->plainTextToken;
+            $user = User::create([
+                'name' => $validated['name'],
+                'email' => $validated['email'],
+                'password' => Hash::make($validated['password']),
+            ]);
 
-        DB::commit();
+            $user->accessToken = $user->createToken('app-token')->plainTextToken;
 
-        return response()->json([
-            'message' => __('dashboard.users.created'),
-            'response' => $user->toArray()
-        ], 200);
+            DB::commit();
+
+            return response()->json([
+                'message' => __('dashboard.users.created'),
+                'response' => $user->toArray()
+            ], 200);
+        } catch (\Exception $e) {
+
+            DB::rollBack();
+
+            return response()->json([
+                'message' => __('dashboard.users.error'),
+                'error' => $e->getMessage()
+            ], 200);
+        }
     }
 
     /**
@@ -71,50 +82,32 @@ class UserController extends CustomController
      */
     public function update(UserUpdateRequest $request, $id)
     {
-        $validated = $request->validated();
+        try {
 
-        DB::beginTransaction();
+            $validated = $request->validated();
 
-        $user = User::find($id);
-        $user->update([
-            'name' => $validated['name']
-        ]);
+            DB::beginTransaction();
 
-        DB::commit();
+            $user = User::find($id);
+            $user->update([
+                'name' => $validated['name']
+            ]);
 
-        return response()->json([
-            'message' => __('dashboard.users.updated'),
-            'response' => $user->toArray()
-        ], 200);
-    }
-
-    /**
-     * Update the specified resource in storage.
-     *
-     * @param UserAclRequest $request
-     * @param $id
-     * @return \Illuminate\Http\JsonResponse
-     */
-    public function acl(UserAclRequest $request, $id)
-    {
-        DB::beginTransaction();
-
-        $user = User::find($id);
-
-        // prevent authenticate user lost onwer role
-        if(auth()->id() === intval($id) && $user->hasRole('owner')) {
+            DB::commit();
 
             return response()->json([
-                'message' => __('dashboard.users.acl_sync_failed'),
+                'message' => __('dashboard.users.updated'),
+                'response' => $user->toArray()
+            ], 200);
+        } catch (\Exception $e) {
+
+            DB::rollBack();
+
+            return response()->json([
+                'message' => __('dashboard.users.error'),
+                'error' => $e->getMessage()
             ], 200);
         }
-
-        DB::commit();
-
-        return response()->json([
-            'message' => __('dashboard.users.acl_sync'),
-            'response' => $user
-        ], 200);
     }
 
     /**
@@ -126,21 +119,33 @@ class UserController extends CustomController
      */
     public function changePassword(UserPasswordRequest $request, $id)
     {
-        $validated = $request->validated();
+        try {
 
-        DB::beginTransaction();
+            $validated = $request->validated();
 
-        $user = User::find($id);
-        $user->update([
-            'password' => Hash::make($validated['password'])
-        ]);
+            DB::beginTransaction();
 
-        DB::commit();
+            $user = User::find($id);
+            $user->update([
+                'password' => Hash::make($validated['password'])
+            ]);
 
-        return response()->json([
-            'message' => __('dashboard.users.password_updated'),
-            'response' => $user->toArray()
-        ], 200);
+            DB::commit();
+
+            return response()->json([
+                'message' => __('dashboard.users.password_updated'),
+                'response' => $user->toArray()
+            ], 200);
+
+        } catch (\Exception $e) {
+
+            DB::rollBack();
+
+            return response()->json([
+                'message' => __('dashboard.users.error'),
+                'error' => $e->getMessage()
+            ], 200);
+        }
     }
 
     /**
@@ -152,21 +157,32 @@ class UserController extends CustomController
      */
     public function changeEmail(UserEmailRequest $request, $id)
     {
-        $validated = $request->validated();
+        try {
 
-        DB::beginTransaction();
+            $validated = $request->validated();
 
-        $user = User::find($id);
-        $user->update([
-            'email' => $validated['email']
-        ]);
+            DB::beginTransaction();
 
-        DB::commit();
+            $user = User::find($id);
+            $user->update([
+                'email' => $validated['email']
+            ]);
 
-        return response()->json([
-            'message' => __('dashboard.users.email_updated'),
-            'response' => $user->toArray()
-        ], 200);
+            DB::commit();
+
+            return response()->json([
+                'message' => __('dashboard.users.email_updated'),
+                'response' => $user->toArray()
+            ], 200);
+        } catch (\Exception $e) {
+
+            DB::rollBack();
+
+            return response()->json([
+                'message' => __('dashboard.users.error'),
+                'error' => $e->getMessage()
+            ], 200);
+        }
     }
 
     /**
@@ -177,20 +193,31 @@ class UserController extends CustomController
      */
     public function show($id)
     {
-        $user = User::find($id);
+        try {
 
-        if (!$user) {
+            $user = User::find($id);
+
+            if (!$user) {
+
+                return response()->json([
+                    'message' => __('dashboard.users.show_failed'),
+                    'response' => $user
+                ], 400);
+            }
 
             return response()->json([
-                'message' => __('dashboard.users.show_failed'),
+                'message' => __('dashboard.users.show'),
                 'response' => $user
-            ], 400);
-        }
+            ], 200);
+        } catch (\Exception $e) {
 
-        return response()->json([
-            'message' => __('dashboard.users.show'),
-            'response' => $user
-        ], 200);
+            DB::rollBack();
+
+            return response()->json([
+                'message' => __('dashboard.users.error'),
+                'error' => $e->getMessage()
+            ], 200);
+        }
     }
 
     /**
@@ -201,23 +228,35 @@ class UserController extends CustomController
      */
     public function destroy($id)
     {
-        DB::beginTransaction();
+        try {
 
-        $model = User::where(['id' => $id]);
+            DB::beginTransaction();
 
-        if (!$model->exists()) {
+            $model = User::where(['id' => $id]);
+
+            if (!$model->exists()) {
+
+                return response()->json([
+                    'message' => __('dashboard.users.destroy_failed')
+                ], 400);
+            }
+
+            $model->delete();
+
+            DB::commit();
 
             return response()->json([
-                'message' => __('dashboard.users.destroy_failed')
-            ], 400);
+                'message' => __('dashboard.users.destroy'),
+            ], 200);
+
+        } catch (\Exception $e) {
+
+            DB::rollBack();
+
+            return response()->json([
+                'message' => __('dashboard.users.error'),
+                'error' => $e->getMessage()
+            ], 200);
         }
-
-        $model->delete();
-
-        DB::commit();
-
-        return response()->json([
-            'message' => __('dashboard.users.destroy'),
-        ], 200);
     }
 }

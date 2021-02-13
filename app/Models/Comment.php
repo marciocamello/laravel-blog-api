@@ -29,4 +29,10 @@ class Comment extends Model
      * @var string
      */
     public $user_id;
+
+    protected $fillable = [
+        'user_id',
+        'post_id',
+        'content'
+    ];
 }

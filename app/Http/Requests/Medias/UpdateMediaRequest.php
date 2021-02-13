@@ -65,7 +65,7 @@ class UpdateMediaRequest extends ApiFormRequest
     public function rules()
     {
         return [
-            //
+            'file' => ['required'],
         ];
     }
 }
