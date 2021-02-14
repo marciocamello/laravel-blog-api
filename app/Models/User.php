@@ -50,5 +50,7 @@ class User extends \App\User
      */
     protected $casts = [
         'email_verified_at' => 'datetime',
+        'updated_at' => 'datetime:Y-m-d h:m',
+        'created_at' => 'datetime:Y-m-d h:m',
     ];
 }

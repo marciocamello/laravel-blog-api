@@ -25,4 +25,9 @@ class Category extends Model
         'name',
         'parent_id'
     ];
+
+    protected $casts = [
+        'updated_at' => 'datetime:Y-m-d h:m',
+        'created_at' => 'datetime:Y-m-d h:m',
+    ];
 }

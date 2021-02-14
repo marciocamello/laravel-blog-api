@@ -33,4 +33,9 @@ class Post extends Model
         'title',
         'description'
     ];
+
+    protected $casts = [
+        'updated_at' => 'datetime:Y-m-d h:m',
+        'created_at' => 'datetime:Y-m-d h:m',
+    ];
 }
