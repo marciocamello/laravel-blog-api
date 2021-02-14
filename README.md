@@ -43,8 +43,7 @@
 ### App/Dashboard
 
 * VueJS
-* Vuex
-* TailwindCSS
+* Bootstrap
 
 ### Docs
 
