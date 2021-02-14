@@ -27,7 +27,7 @@ class Category extends Model
     ];
 
     protected $casts = [
-        'updated_at' => 'datetime:Y-m-d h:m',
-        'created_at' => 'datetime:Y-m-d h:m',
+        'updated_at' => 'datetime:d-m-Y H:i:s',
+        'created_at' => 'datetime:d-m-Y H:i:s',
     ];
 }

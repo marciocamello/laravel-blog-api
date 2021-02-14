@@ -5,8 +5,10 @@ namespace App\Http\Controllers;
 use App\Http\Requests\Posts\StorePostRequest;
 use App\Http\Requests\Posts\UpdatePostRequest;
 use App\Http\Resources\PostResource;
+use App\Models\Media;
 use App\Models\Post;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Storage;
 
 /**
  * Class PostController
@@ -43,7 +45,7 @@ class PostController extends CustomController
      */
     public function index()
     {
-        return new PostResource(Post::all());
+        return PostResource::collection(Post::all());
     }
 
     /**
@@ -85,7 +87,7 @@ class PostController extends CustomController
 
             DB::beginTransaction();
 
-            $user = Post::create([
+            $post = Post::create([
                 'user_id' => auth()->id(),
                 'category_id' => $validated['category_id'],
                 'title' => $validated['title'],
@@ -94,9 +96,30 @@ class PostController extends CustomController
 
             DB::commit();
 
+            $file = $request->file('file');
+
+            if ($file) {
+
+                $name = uniqid(date('HisYmd'));
+                $extension = $file->extension();
+                $nameFile = "{$name}.{$extension}";
+
+                $file->storePubliclyAs('medias', $nameFile, 'public');
+
+                DB::beginTransaction();
+
+                Media::create([
+                    'post_id' => $post['id'],
+                    'file' => $nameFile,
+                    'file_info' => [],
+                ]);
+
+                DB::commit();
+            }
+
             return response()->json([
                 'message' => __('dashboard.posts.created'),
-                'response' => $user->toArray()
+                'response' => $post->toArray()
             ], 200);
         } catch (\Exception $e) {
 
@@ -149,9 +172,12 @@ class PostController extends CustomController
     {
         try {
 
+            $data = $post;
+            $data['media'] = $post->media;
+
             return response()->json([
                 'message' => __('dashboard.posts.show'),
-                'response' => $post
+                'response' => $data
             ], 200);
 
         } catch (\Exception $e) {
@@ -223,9 +249,33 @@ class PostController extends CustomController
 
             DB::commit();
 
+            $file = $request->file('file');
+
+            $media = $post->media;
+
+            if ($file) {
+
+                $nameFile = $post->media['file'];
+
+                Storage::disk('public')->delete("medias/$nameFile");
+                $file->storePubliclyAs('medias', $nameFile, 'public');
+
+                DB::beginTransaction();
+
+                $media = $post->media->update([
+                    'file' => $nameFile,
+                    'file_info' => [],
+                ]);
+
+                DB::commit();
+            }
+
+            $data = $post;
+            $data['media'] = $media;
+
             return response()->json([
                 'message' => __('dashboard.posts.updated'),
-                'response' => $post->toArray()
+                'response' => $data
             ], 200);
         } catch (\Exception $e) {
 
@@ -277,6 +327,15 @@ class PostController extends CustomController
     public function destroy(Post $post)
     {
         try {
+
+            if ($post->media) {
+                DB::beginTransaction();
+
+                $post->media->delete();
+                Storage::disk('public')->delete("medias/$post->media[file]");
+
+                DB::commit();
+            }
 
             DB::beginTransaction();
 

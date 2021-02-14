@@ -29,8 +29,8 @@ class Media extends Model
 
     protected $casts = [
         'file_info' => 'array',
-        'updated_at' => 'datetime:Y-m-d h:m',
-        'created_at' => 'datetime:Y-m-d h:m',
+        'updated_at' => 'datetime:d-m-Y H:i:s',
+        'created_at' => 'datetime:d-m-Y H:i:s',
     ];
 
     protected $fillable = [

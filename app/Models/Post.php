@@ -35,7 +35,12 @@ class Post extends Model
     ];
 
     protected $casts = [
-        'updated_at' => 'datetime:Y-m-d h:m',
-        'created_at' => 'datetime:Y-m-d h:m',
+        'updated_at' => 'datetime:d-m-Y H:i:s',
+        'created_at' => 'datetime:d-m-Y H:i:s',
     ];
+
+    public function media()
+    {
+        return $this->hasOne('App\Models\Media', 'post_id', 'id');
+    }
 }
