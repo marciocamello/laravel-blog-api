@@ -28,7 +28,9 @@ class Media extends Model
     public $post_id;
 
     protected $casts = [
-        'file_info' => 'array'
+        'file_info' => 'array',
+        'updated_at' => 'datetime:d-m-Y H:i:s',
+        'created_at' => 'datetime:d-m-Y H:i:s',
     ];
 
     protected $fillable = [
@@ -37,12 +39,12 @@ class Media extends Model
         'post_id'
     ];
 
-    /**
-     * @param $value
-     * @return string
-     */
+    protected $appends = [
+        'file_url'
+    ];
+
     public function getFileUrlAttribute($value)
     {
-        return "/storage/medias/$value";
+        return config('app.url') . "/storage/medias/" . $this->attributes['file'];
     }
 }
