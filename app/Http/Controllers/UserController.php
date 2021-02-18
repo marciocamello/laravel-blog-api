@@ -44,7 +44,7 @@ class UserController extends CustomController
      */
     public function index()
     {
-        return new UserResource(User::all());
+        return new UserResource(User::paginate(5));
     }
 
     /**
