@@ -6,7 +6,6 @@ use App\Http\Requests\Categories\StoreCategoryRequest;
 use App\Http\Requests\Categories\UpdateCategoryRequest;
 use App\Http\Resources\CategoryResource;
 use App\Models\Category;
-use Illuminate\Support\Facades\DB;
 
 /**
  * Class CategoryController
@@ -43,7 +42,7 @@ class CategoryController extends CustomController
      */
     public function index()
     {
-        return new CategoryResource(Category::all());
+        return new CategoryResource(Category::paginate(5));
     }
 
     /**
@@ -83,22 +82,16 @@ class CategoryController extends CustomController
 
             $validated = $request->validated();
 
-            DB::beginTransaction();
-
-            $user = Category::create([
+            $user = Category::createCategory([
                 'name' => $validated['name'],
                 'parent_id' => $validated['parent_id'] ?? 0
             ]);
-
-            DB::commit();
 
             return response()->json([
                 'message' => __('dashboard.categories.created'),
                 'response' => $user->toArray()
             ], 200);
         } catch (\Exception $e) {
-
-            DB::rollBack();
 
             return response()->json([
                 'message' => __('dashboard.categories.error'),
@@ -211,21 +204,15 @@ class CategoryController extends CustomController
 
             $validated = $request->validated();
 
-            DB::beginTransaction();
-
-            $category->update([
+            $category->updateCategory([
                 'name' => $validated['name']
             ]);
-
-            DB::commit();
 
             return response()->json([
                 'message' => __('dashboard.categories.updated'),
                 'response' => $category->toArray()
             ], 200);
         } catch (\Exception $e) {
-
-            DB::rollBack();
 
             return response()->json([
                 'message' => __('dashboard.categories.error'),
@@ -274,18 +261,12 @@ class CategoryController extends CustomController
     {
         try {
 
-            DB::beginTransaction();
-
-            $category->delete();
-
-            DB::commit();
+            $category->deleteCategory();
 
             return response()->json([
                 'message' => __('dashboard.categories.destroy'),
             ], 200);
         } catch (\Exception $e) {
-
-            DB::rollBack();
 
             return response()->json([
                 'message' => __('dashboard.categories.error'),

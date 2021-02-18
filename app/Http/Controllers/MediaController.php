@@ -7,7 +7,6 @@ use App\Http\Requests\Medias\UpdateMediaRequest;
 use App\Http\Resources\MediaResource;
 use App\Models\Media;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Storage;
 
 /**
  * Class MediaController
@@ -44,7 +43,7 @@ class MediaController extends CustomController
      */
     public function index()
     {
-        return new MediaResource(Media::all());
+        return new MediaResource(Media::paginate(5));
     }
 
     /**
@@ -83,24 +82,8 @@ class MediaController extends CustomController
         try {
 
             $validated = $request->validated();
-
             $file = $request->file('file');
-
-            $name = uniqid(date('HisYmd'));
-            $extension = $file->extension();
-            $nameFile = "{$name}.{$extension}";
-
-            $file->storePubliclyAs('medias', $nameFile, 'public');
-
-            DB::beginTransaction();
-
-            $media = Media::create([
-                'post_id' => $validated['post_id'],
-                'file' => $nameFile,
-                'file_info' => [],
-            ]);
-
-            DB::commit();
+            $media = Media::createMediaByPost($file, $validated['post_id']);
 
             return response()->json([
                 'message' => __('dashboard.medias.created'),
@@ -220,19 +203,7 @@ class MediaController extends CustomController
         try {
 
             $file = $request->file('file');
-            $nameFile =  $media['file'];
-
-            Storage::disk('public')->delete("medias/$nameFile");
-            $file->storePubliclyAs('medias', $nameFile, 'public');
-
-            DB::beginTransaction();
-
-            $media->update([
-                'file' => $nameFile,
-                'file_info' => [],
-            ]);
-
-            DB::commit();
+            $media->updateMedia($file);
 
             return response()->json([
                 'message' => __('dashboard.medias.updated'),
@@ -289,12 +260,7 @@ class MediaController extends CustomController
     {
         try {
 
-            DB::beginTransaction();
-
-            $media->delete();
-            Storage::disk('public')->delete("medias/$media[file]");
-
-            DB::commit();
+            $media->deleteMedia();
 
             return response()->json([
                 'message' => __('dashboard.medias.destroy'),

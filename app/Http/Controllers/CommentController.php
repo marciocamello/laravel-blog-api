@@ -43,7 +43,7 @@ class CommentController extends CustomController
      */
     public function index()
     {
-        return new CommentResource(Comment::all());
+        return new CommentResource(Comment::paginate(5));
     }
 
     /**
@@ -83,23 +83,17 @@ class CommentController extends CustomController
 
             $validated = $request->validated();
 
-            DB::beginTransaction();
-
-            $comment = Comment::create([
+            $comment = Comment::createComment([
                 'user_id' => auth()->id(),
                 'post_id' => $validated['post_id'],
                 'content' => $validated['content']
             ]);
-
-            DB::commit();
 
             return response()->json([
                 'message' => __('dashboard.comments.created'),
                 'response' => $comment->toArray()
             ], 200);
         } catch (\Exception $e) {
-
-            DB::rollBack();
 
             return response()->json([
                 'message' => __('dashboard.comments.error'),
@@ -212,21 +206,15 @@ class CommentController extends CustomController
 
             $validated = $request->validated();
 
-            DB::beginTransaction();
-
-            $comment->update([
+            $comment->updateComment([
                 'content' => $validated['content']
             ]);
-
-            DB::commit();
 
             return response()->json([
                 'message' => __('dashboard.comments.updated'),
                 'response' => $comment->toArray()
             ], 200);
         } catch (\Exception $e) {
-
-            DB::rollBack();
 
             return response()->json([
                 'message' => __('dashboard.comments.error'),
@@ -275,18 +263,12 @@ class CommentController extends CustomController
     {
         try {
 
-            DB::beginTransaction();
-
-            $comment->delete();
-
-            DB::commit();
+            $comment->deleteComment();
 
             return response()->json([
                 'message' => __('dashboard.comments.destroy'),
             ], 200);
         } catch (\Exception $e) {
-
-            DB::rollBack();
 
             return response()->json([
                 'message' => __('dashboard.comments.error'),

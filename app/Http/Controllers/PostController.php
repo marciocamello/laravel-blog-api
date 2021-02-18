@@ -5,10 +5,8 @@ namespace App\Http\Controllers;
 use App\Http\Requests\Posts\StorePostRequest;
 use App\Http\Requests\Posts\UpdatePostRequest;
 use App\Http\Resources\PostResource;
-use App\Models\Media;
 use App\Models\Post;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Storage;
 
 /**
  * Class PostController
@@ -45,7 +43,7 @@ class PostController extends CustomController
      */
     public function index()
     {
-        return PostResource::collection(Post::all());
+        return PostResource::collection(Post::paginate(5));
     }
 
     /**
@@ -85,45 +83,18 @@ class PostController extends CustomController
 
             $validated = $request->validated();
 
-            DB::beginTransaction();
-
-            $post = Post::create([
+            $post = Post::createPostAndMedia([
                 'user_id' => auth()->id(),
                 'category_id' => $validated['category_id'],
                 'title' => $validated['title'],
                 'description' => $validated['description']
-            ]);
-
-            DB::commit();
-
-            $file = $request->file('file');
-
-            if ($file) {
-
-                $name = uniqid(date('HisYmd'));
-                $extension = $file->extension();
-                $nameFile = "{$name}.{$extension}";
-
-                $file->storePubliclyAs('medias', $nameFile, 'public');
-
-                DB::beginTransaction();
-
-                Media::create([
-                    'post_id' => $post['id'],
-                    'file' => $nameFile,
-                    'file_info' => [],
-                ]);
-
-                DB::commit();
-            }
+            ], $request->file('file'));
 
             return response()->json([
                 'message' => __('dashboard.posts.created'),
                 'response' => $post->toArray()
             ], 200);
         } catch (\Exception $e) {
-
-            DB::rollBack();
 
             return response()->json([
                 'message' => __('dashboard.posts.error'),
@@ -239,47 +210,17 @@ class PostController extends CustomController
 
             $validated = $request->validated();
 
-            DB::beginTransaction();
-
-            $post->update([
+            $result = $post->updatePostAndMedia([
                 'category_id' => $validated['category_id'],
                 'title' => $validated['title'],
                 'description' => $validated['description']
-            ]);
-
-            DB::commit();
-
-            $file = $request->file('file');
-
-            $media = $post->media;
-
-            if ($file) {
-
-                $nameFile = $post->media['file'];
-
-                Storage::disk('public')->delete("medias/$nameFile");
-                $file->storePubliclyAs('medias', $nameFile, 'public');
-
-                DB::beginTransaction();
-
-                $media = $post->media->update([
-                    'file' => $nameFile,
-                    'file_info' => [],
-                ]);
-
-                DB::commit();
-            }
-
-            $data = $post;
-            $data['media'] = $media;
+            ], $request->file('file'));
 
             return response()->json([
                 'message' => __('dashboard.posts.updated'),
-                'response' => $data
+                'response' => $result
             ], 200);
         } catch (\Exception $e) {
-
-            DB::rollBack();
 
             return response()->json([
                 'message' => __('dashboard.posts.error'),
@@ -328,20 +269,7 @@ class PostController extends CustomController
     {
         try {
 
-            if ($post->media) {
-                DB::beginTransaction();
-
-                $post->media->delete();
-                Storage::disk('public')->delete("medias/$post->media[file]");
-
-                DB::commit();
-            }
-
-            DB::beginTransaction();
-
-            $post->delete();
-
-            DB::commit();
+            $post->deletePostAndMedia();
 
             return response()->json([
                 'message' => __('dashboard.posts.destroy'),
